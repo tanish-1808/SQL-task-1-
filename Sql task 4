@@ -1,0 +1,45 @@
+ 1. SUM — Total quantity per category
+
+SELECT category, SUM(quantity) AS total_quantity
+FROM sales
+GROUP BY category;
+
+ 2. COUNT — Number of products per category
+
+
+SELECT category, COUNT(*) AS number_of_products
+FROM sales
+GROUP BY category;
+
+ 3. AVG — Average price per category
+
+
+SELECT category, AVG(price) AS avg_price
+FROM sales
+GROUP BY category;
+
+ 4. SUM + GROUP BY — Total revenue per category
+
+SELECT category, SUM(quantity * price) AS total_revenue
+FROM sales
+GROUP BY category;
+
+ 5. HAVING — Filter groups
+
+SELECT category, SUM(quantity * price) AS total_revenue
+FROM sales
+GROUP BY category
+HAVING total_revenue > 20;
+
+ 6. Multiple aggregates in one query
+
+
+SELECT category,
+       SUM(quantity) AS total_qty,
+       AVG(price) AS avg_price,
+       COUNT(*) AS product_count
+FROM sales
+GROUP BY category;
+
+
+
