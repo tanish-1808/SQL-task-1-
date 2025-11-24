@@ -1,0 +1,31 @@
+CREATE TABLE Employees ( emp_id INTEGER, name TEXT,
+department_id INTEGER, salary INTEGER );
+
+CREATE TABLE Departments ( department_id INTEGER, dept_name TEXT );
+
+CREATE TABLE Projects ( project_id INTEGER, emp_id INTEGER, hours_worked
+INTEGER );
+
+– Sample Queries
+
+– 1. Subquery in SELECT SELECT name, salary, (SELECT AVG(salary) FROM
+Employees) AS avg_salary FROM Employees;
+
+– 2. Subquery using IN SELECT name FROM Employees WHERE emp_id IN (
+SELECT emp_id FROM Projects WHERE hours_worked > 50 );
+
+– 3. Correlated EXISTS Subquery SELECT e.name FROM Employees e WHERE
+EXISTS ( SELECT 1 FROM Projects p WHERE p.emp_id = e.emp_id );
+
+– 4. Subquery in FROM SELECT e.name, t.total_hours FROM Employees e JOIN
+( SELECT emp_id, SUM(hours_worked) AS total_hours FROM Projects GROUP BY
+emp_id ) t ON e.emp_id = t.emp_id;
+
+– 5. Correlated Subquery in SELECT SELECT e.name, (SELECT COUNT(*) FROM
+Projects p WHERE p.emp_id = e.emp_id) AS project_count FROM Employees e;
+
+– 6. Scalar Subquery (=) SELECT name, salary FROM Employees WHERE salary
+= (SELECT MAX(salary) FROM Employees);
+
+– 7. NOT EXISTS Subquery SELECT e.name FROM Employees e WHERE NOT EXISTS
+( SELECT 1 FROM Projects p WHERE p.emp_id = e.emp_id );
