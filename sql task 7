@@ -1,0 +1,106 @@
+CREATE VIEW CustomerOrderSummary AS
+SELECT 
+    c.customer_id,
+    c.full_name,
+    COUNT(o.order_id) AS total_orders,
+    COALESCE(SUM(o.total_amount), 0) AS total_spent
+FROM Customers c
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.full_name;
+
+
+
+SELECT * FROM CustomerOrderSummary ORDER BY total_spent DESC;
+
+
+CREATE VIEW ProductSalesSummary AS
+SELECT 
+    p.product_id,
+    p.product_name,
+    COALESCE(SUM(oi.quantity), 0) AS total_sold,
+    COALESCE(SUM(oi.quantity * p.price), 0) AS total_revenue
+FROM Products p
+LEFT JOIN OrderItems oi ON p.product_id = oi.product_id
+GROUP BY p.product_id, p.product_name;
+
+
+
+SELECT * FROM ProductSalesSummary ORDER BY total_revenue DESC;
+
+
+
+
+
+CREATE VIEW OrderFullDetails AS
+SELECT
+    o.order_id,
+    c.full_name AS customer_name,
+    o.order_date,
+    o.total_amount,
+    o.status AS order_status,
+    (SELECT status 
+     FROM Payments 
+     WHERE order_id = o.order_id 
+     ORDER BY payment_date DESC 
+     LIMIT 1) AS last_payment_status
+FROM Orders o
+JOIN Customers c ON o.customer_id = c.customer_id;
+
+
+
+
+
+SELECT * FROM OrderFullDetails WHERE last_payment_status = 'Completed';
+
+
+
+
+
+
+
+CREATE VIEW LowStockProducts AS
+SELECT 
+    product_id,
+    product_name,
+    stock
+FROM Products
+WHERE stock < 10;
+
+
+
+SELECT * FROM LowStockProducts;
+
+
+
+
+
+
+
+CREATE VIEW PendingPayments AS
+SELECT 
+    o.order_id,
+    c.full_name,
+    o.total_amount,
+    o.order_date
+FROM Orders o
+JOIN Customers c ON o.customer_id = c.customer_id
+WHERE NOT EXISTS (
+    SELECT 1 FROM Payments p 
+    WHERE p.order_id = o.order_id AND p.status = 'Completed'
+);
+
+
+
+
+SELECT * FROM PendingPayments;
+
+
+
+
+
+
+
+
+
+
+
